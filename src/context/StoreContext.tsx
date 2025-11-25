@@ -1,8 +1,17 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { type Item, items as initialItems } from '../data/items';
 import { soundManager } from '../utils/soundManager';
+import {
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut,
+    onAuthStateChanged
+} from 'firebase/auth';
+import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 
 interface User {
+    uid: string;
     username: string;
     credits: number;
 }
@@ -21,14 +30,15 @@ interface StoreContextType {
     user: User | null;
     transactions: Transaction[];
     favorites: number[];
+    loading: boolean;
     addToCart: (item: Item) => void;
     removeFromCart: (index: number) => void;
     clearCart: () => void;
-    checkout: () => { success: boolean; message: string };
+    checkout: () => Promise<{ success: boolean; message: string }>;
     toggleFavorite: (id: number) => void;
-    login: (username: string) => boolean;
-    signup: (username: string) => boolean;
-    logout: () => void;
+    login: (username: string, password: string) => Promise<{ success: boolean; message: string }>;
+    signup: (username: string, password: string) => Promise<{ success: boolean; message: string }>;
+    logout: () => Promise<void>;
     searchQuery: string;
     setSearchQuery: (query: string) => void;
     sortBy: 'price-asc' | 'price-desc' | 'name' | null;
@@ -41,43 +51,76 @@ interface StoreContextType {
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export const StoreProvider = ({ children }: { children: ReactNode }) => {
-    const [user, setUser] = useState<User | null>(() => {
-        const saved = localStorage.getItem('cyber_user');
-        return saved ? JSON.parse(saved) : null;
-    });
-
-    const [cart, setCart] = useState<Item[]>(() => {
-        const saved = localStorage.getItem('cyber_cart');
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    const [credits, setCredits] = useState<number>(user ? user.credits : 50000);
-
-    const [transactions, setTransactions] = useState<Transaction[]>(() => {
-        const saved = localStorage.getItem('cyber_transactions');
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    const [favorites, setFavorites] = useState<number[]>(() => {
-        const saved = localStorage.getItem('cyber_favorites');
-        return saved ? JSON.parse(saved) : [];
-    });
-
+    const [user, setUser] = useState<User | null>(null);
+    const [cart, setCart] = useState<Item[]>([]);
+    const [credits, setCredits] = useState<number>(50000);
+    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [favorites, setFavorites] = useState<number[]>([]);
+    const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'name' | null>(null);
     const [selectedCategory, setSelectedCategory] = useState('all');
 
+    // Listen to Firebase auth state
     useEffect(() => {
-        localStorage.setItem('cyber_cart', JSON.stringify(cart));
-        localStorage.setItem('cyber_transactions', JSON.stringify(transactions));
-        localStorage.setItem('cyber_favorites', JSON.stringify(favorites));
-        if (user) {
-            localStorage.setItem('cyber_user', JSON.stringify({ ...user, credits }));
-            const users = JSON.parse(localStorage.getItem('cyber_users_db') || '{}');
-            users[user.username] = { ...user, credits };
-            localStorage.setItem('cyber_users_db', JSON.stringify(users));
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+            if (firebaseUser) {
+                // Load user data from Firestore
+                await loadUserData(firebaseUser.uid);
+            } else {
+                setUser(null);
+                setCredits(50000);
+                setCart([]);
+                setTransactions([]);
+                setFavorites([]);
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const loadUserData = async (uid: string) => {
+        try {
+            const userDoc = await getDoc(doc(db, 'users', uid));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                setUser({
+                    uid,
+                    username: userData.username,
+                    credits: userData.credits
+                });
+                setCredits(userData.credits);
+                setCart(userData.cart || []);
+                setTransactions(userData.transactions || []);
+                setFavorites(userData.favorites || []);
+            }
+        } catch (error) {
+            console.error('Error loading user data:', error);
         }
-    }, [cart, credits, user, transactions, favorites]);
+    };
+
+    const saveUserData = async () => {
+        if (!user) return;
+
+        try {
+            await updateDoc(doc(db, 'users', user.uid), {
+                credits,
+                cart,
+                transactions,
+                favorites
+            });
+        } catch (error) {
+            console.error('Error saving user data:', error);
+        }
+    };
+
+    // Auto-save user data when it changes
+    useEffect(() => {
+        if (user && !loading) {
+            saveUserData();
+        }
+    }, [cart, credits, transactions, favorites]);
 
     const addToCart = (item: Item) => {
         setCart([...cart, item]);
@@ -92,7 +135,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         setCart([]);
     };
 
-    const checkout = () => {
+    const checkout = async () => {
         const total = cart.reduce((sum, item) => sum + item.price, 0);
         if (credits >= total) {
             const newTransaction: Transaction = {
@@ -119,39 +162,59 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         soundManager.playClick();
     };
 
-    const login = (username: string) => {
-        const users = JSON.parse(localStorage.getItem('cyber_users_db') || '{}');
-        if (users[username]) {
-            const loggedInUser = users[username];
-            setUser(loggedInUser);
-            setCredits(loggedInUser.credits);
-            return true;
+    const login = async (username: string, password: string) => {
+        try {
+            // Use username as email (username@cybermarket.local)
+            const email = `${username}@cybermarket.local`;
+            await signInWithEmailAndPassword(auth, email, password);
+            return { success: true, message: 'LOGIN SUCCESSFUL' };
+        } catch (error: any) {
+            console.error('Login error:', error);
+            return { success: false, message: 'ACCESS DENIED: INVALID CREDENTIALS' };
         }
-        return false;
     };
 
-    const signup = (username: string) => {
-        const users = JSON.parse(localStorage.getItem('cyber_users_db') || '{}');
-        if (users[username]) {
-            return false;
+    const signup = async (username: string, password: string) => {
+        try {
+            // Use username as email (username@cybermarket.local)
+            const email = `${username}@cybermarket.local`;
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+            // Create user document in Firestore
+            await setDoc(doc(db, 'users', userCredential.user.uid), {
+                username,
+                credits: 50000,
+                cart: [],
+                transactions: [],
+                favorites: [],
+                createdAt: Date.now()
+            });
+
+            return { success: true, message: 'ACCOUNT CREATED SUCCESSFULLY' };
+        } catch (error: any) {
+            console.error('Signup error:', error);
+
+            // Better error messages
+            if (error.code === 'auth/email-already-in-use') {
+                return { success: false, message: 'IDENTITY ALREADY REGISTERED' };
+            } else if (error.code === 'auth/configuration-not-found') {
+                return { success: false, message: 'FIREBASE AUTH NOT ENABLED. ENABLE EMAIL/PASSWORD IN FIREBASE CONSOLE.' };
+            } else if (error.code === 'auth/weak-password') {
+                return { success: false, message: 'PASSWORD TOO WEAK. USE 6+ CHARACTERS.' };
+            } else if (error.code === 'auth/network-request-failed') {
+                return { success: false, message: 'NETWORK ERROR. CHECK CONNECTION.' };
+            }
+
+            return { success: false, message: error.message || 'REGISTRATION FAILED' };
         }
-        const newUser = { username, credits: 50000 };
-        users[username] = newUser;
-        localStorage.setItem('cyber_users_db', JSON.stringify(users));
-        setUser(newUser);
-        setCredits(newUser.credits);
-        return true;
     };
 
-    const logout = () => {
-        setUser(null);
-        setCart([]);
-        setTransactions([]);
-        setFavorites([]);
-        localStorage.removeItem('cyber_user');
-        localStorage.removeItem('cyber_cart');
-        localStorage.removeItem('cyber_transactions');
-        localStorage.removeItem('cyber_favorites');
+    const logout = async () => {
+        try {
+            await signOut(auth);
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     };
 
     const filteredItems = initialItems
@@ -175,6 +238,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             user,
             transactions,
             favorites,
+            loading,
             addToCart,
             removeFromCart,
             clearCart,

@@ -6,9 +6,10 @@ export const Login: React.FC = () => {
     const { login, signup } = useStore();
     const [isLogin, setIsLogin] = useState(true);
     const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [error, setError] = useState('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
@@ -17,12 +18,17 @@ export const Login: React.FC = () => {
             return;
         }
 
+        if (!password.trim()) {
+            setError('ACCESS CODE REQUIRED');
+            return;
+        }
+
         if (isLogin) {
-            const success = login(username);
-            if (!success) setError('ACCESS DENIED: UNKNOWN IDENTITY');
+            const result = await login(username, password);
+            if (!result.success) setError(result.message);
         } else {
-            const success = signup(username);
-            if (!success) setError('IDENTITY ALREADY REGISTERED');
+            const result = await signup(username, password);
+            if (!result.success) setError(result.message);
         }
     };
 
@@ -77,6 +83,28 @@ export const Login: React.FC = () => {
                         />
                     </div>
 
+                    <div>
+                        <label style={{ display: 'block', color: '#ffe600', marginBottom: '5px', fontFamily: 'Orbitron' }}>
+                            ACCESS_CODE
+                        </label>
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            style={{
+                                width: '100%',
+                                background: 'rgba(0, 243, 255, 0.1)',
+                                border: '1px solid #333',
+                                padding: '15px',
+                                color: '#fff',
+                                fontFamily: 'Rajdhani',
+                                fontSize: '1.2rem',
+                                outline: 'none'
+                            }}
+                            placeholder="ENTER PASSPHRASE..."
+                        />
+                    </div>
+
                     {error && (
                         <div style={{
                             color: '#ff0055',
@@ -97,7 +125,7 @@ export const Login: React.FC = () => {
 
                 <div style={{ marginTop: '20px', textAlign: 'center', color: '#666' }}>
                     <button
-                        onClick={() => { setIsLogin(!isLogin); setError(''); }}
+                        onClick={() => { setIsLogin(!isLogin); setError(''); setPassword(''); }}
                         style={{
                             background: 'none',
                             border: 'none',

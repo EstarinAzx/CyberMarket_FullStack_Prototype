@@ -7,10 +7,10 @@ export const CartSidebar: React.FC = () => {
 
     const total = cart.reduce((sum, item) => sum + item.price, 0);
 
-    const handleCheckout = () => {
+    const handleCheckout = async () => {
         if (cart.length === 0) return;
 
-        const result = checkout();
+        const result = await checkout();
         alert(result.message);
     };
 
