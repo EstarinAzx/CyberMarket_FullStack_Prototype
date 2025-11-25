@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CYBER_MARKET // V.2.0.77</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="crt-overlay"></div>
+    <div class="scanline"></div>
+
+    <div class="app-container">
+        <!-- Header / Status Bar -->
+        <header class="cyber-header">
+            <div class="brand">
+                <span class="glitch" data-text="CYBER_MARKET">CYBER_MARKET</span>
+                <span class="version">SYS.VER.2.0.77</span>
+            </div>
+            <div class="user-stats">
+                <div class="stat-item">
+                    <span class="label">CREDITS</span>
+                    <span class="value" id="credits-display">¥ 50,000</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">REP</span>
+                    <span class="value">LVL 50</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- Navigation / Categories -->
+            <nav class="cyber-nav">
+                <ul id="category-list">
+                    <li class="nav-item active" data-category="all">ALL</li>
+                    <li class="nav-item" data-category="weapon">WEAPONS</li>
+                    <li class="nav-item" data-category="implant">IMPLANTS</li>
+                    <li class="nav-item" data-category="gear">GEAR</li>
+                </ul>
+                <div class="nav-decoration">
+                    <div class="deco-line"></div>
+                    <div class="deco-box"></div>
+                </div>
+            </nav>
+
+            <!-- Main Product Grid -->
+            <main class="product-grid" id="product-grid">
+                <!-- Items will be injected here -->
+            </main>
+
+            <!-- Cart / Loadout Sidebar -->
+            <aside class="cyber-sidebar">
+                <div class="sidebar-header">
+                    <h3>LOADOUT</h3>
+                    <div class="capacity">0 / 10</div>
+                </div>
+                <div class="cart-items" id="cart-items">
+                    <!-- Cart items here -->
+                    <div class="empty-msg">NO ITEMS EQUIPPED</div>
+                </div>
+                <div class="sidebar-footer">
+                    <div class="total-row">
+                        <span>TOTAL</span>
+                        <span id="cart-total">¥ 0</span>
+                    </div>
+                    <button class="cyber-btn primary" id="checkout-btn">
+                        <span class="btn-content">INITIATE_TRANSACTION</span>
+                        <span class="btn-glitch"></span>
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
