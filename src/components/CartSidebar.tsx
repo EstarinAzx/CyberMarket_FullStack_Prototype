@@ -1,9 +1,12 @@
+import React from 'react';
 import { useStore } from '../context/StoreContext';
+import { useNotification } from '../context/NotificationContext';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const CartSidebar: React.FC = () => {
     const { cart, removeFromCart, checkout } = useStore();
+    const { showNotification } = useNotification();
 
     const total = cart.reduce((sum, item) => sum + item.price, 0);
 
@@ -11,7 +14,7 @@ export const CartSidebar: React.FC = () => {
         if (cart.length === 0) return;
 
         const result = await checkout();
-        alert(result.message);
+        showNotification(result.message, result.success ? 'success' : 'error');
     };
 
     return (

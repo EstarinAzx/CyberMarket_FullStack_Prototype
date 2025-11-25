@@ -3,7 +3,9 @@ import { useStore } from '../context/StoreContext';
 import { ProductGrid } from './ProductGrid';
 import { CartSidebar } from './CartSidebar';
 import { TransactionHistory } from './TransactionHistory';
-import { Search, Receipt } from 'lucide-react';
+import { Inventory } from './Inventory';
+import { Search, Receipt, Package } from 'lucide-react';
+import { AnimatePresence } from 'framer-motion';
 
 export const Layout: React.FC = () => {
     const {
@@ -18,6 +20,7 @@ export const Layout: React.FC = () => {
     } = useStore();
 
     const [showHistory, setShowHistory] = useState(false);
+    const [showInventory, setShowInventory] = useState(false);
     const categories = ['all', 'weapon', 'implant', 'gear'];
 
     return (
@@ -51,6 +54,24 @@ export const Layout: React.FC = () => {
                 </div>
 
                 <div className="user-stats">
+                    <button
+                        onClick={() => setShowInventory(true)}
+                        style={{
+                            background: 'transparent',
+                            border: '1px solid #00f3ff',
+                            color: '#00f3ff',
+                            padding: '8px 15px',
+                            fontFamily: 'Orbitron',
+                            cursor: 'pointer',
+                            marginRight: '10px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px'
+                        }}
+                    >
+                        <Package size={16} />
+                        INVENTORY
+                    </button>
                     <button
                         onClick={() => setShowHistory(true)}
                         style={{
@@ -138,6 +159,9 @@ export const Layout: React.FC = () => {
             </div>
 
             <TransactionHistory isOpen={showHistory} onClose={() => setShowHistory(false)} />
+            <AnimatePresence>
+                {showInventory && <Inventory onClose={() => setShowInventory(false)} />}
+            </AnimatePresence>
         </div>
     );
 };

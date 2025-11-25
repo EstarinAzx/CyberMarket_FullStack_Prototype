@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
+import { useNotification } from '../context/NotificationContext';
 import { motion } from 'framer-motion';
 
 export const Login: React.FC = () => {
     const { login, signup } = useStore();
+    const { showNotification } = useNotification();
     const [isLogin, setIsLogin] = useState(true);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -25,10 +27,18 @@ export const Login: React.FC = () => {
 
         if (isLogin) {
             const result = await login(username, password);
-            if (!result.success) setError(result.message);
+            if (!result.success) {
+                showNotification(result.message, 'error');
+            } else {
+                showNotification(result.message, 'success');
+            }
         } else {
             const result = await signup(username, password);
-            if (!result.success) setError(result.message);
+            if (!result.success) {
+                showNotification(result.message, 'error');
+            } else {
+                showNotification(result.message, 'success');
+            }
         }
     };
 

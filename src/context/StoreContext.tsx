@@ -10,10 +10,20 @@ import {
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
+interface Loadout {
+    primary: Item | null;
+    secondary: Item | null;
+    armor: Item | null;
+    implant: Item | null;
+    gear: Item | null;
+}
+
 interface User {
     uid: string;
     username: string;
     credits: number;
+    inventory: Item[];
+    loadout: Loadout;
 }
 
 interface Transaction {
@@ -46,6 +56,8 @@ interface StoreContextType {
     filteredItems: Item[];
     selectedCategory: string;
     setSelectedCategory: (category: string) => void;
+    equipItem: (item: Item, slot: keyof Loadout) => void;
+    unequipItem: (slot: keyof Loadout) => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -60,6 +72,14 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [sortBy, setSortBy] = useState<'price-asc' | 'price-desc' | 'name' | null>(null);
     const [selectedCategory, setSelectedCategory] = useState('all');
+
+    const defaultLoadout: Loadout = {
+        primary: null,
+        secondary: null,
+        armor: null,
+        implant: null,
+        gear: null
+    };
 
     // Listen to Firebase auth state
     useEffect(() => {
@@ -85,11 +105,14 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             const userDoc = await getDoc(doc(db, 'users', uid));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
-                setUser({
+                const loadedUser: User = {
                     uid,
                     username: userData.username,
-                    credits: userData.credits
-                });
+                    credits: userData.credits,
+                    inventory: userData.inventory || [],
+                    loadout: userData.loadout || defaultLoadout
+                };
+                setUser(loadedUser);
                 setCredits(userData.credits);
                 setCart(userData.cart || []);
                 setTransactions(userData.transactions || []);
@@ -108,7 +131,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 credits,
                 cart,
                 transactions,
-                favorites
+                favorites,
+                inventory: user.inventory,
+                loadout: user.loadout
             });
         } catch (error) {
             console.error('Error saving user data:', error);
@@ -120,7 +145,7 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         if (user && !loading) {
             saveUserData();
         }
-    }, [cart, credits, transactions, favorites]);
+    }, [cart, credits, transactions, favorites, user?.inventory, user?.loadout]);
 
     const addToCart = (item: Item) => {
         setCart([...cart, item]);
@@ -144,15 +169,36 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 total,
                 timestamp: Date.now()
             };
+
+            // Add items to inventory
+            if (user) {
+                const updatedInventory = [...user.inventory, ...cart];
+                setUser({ ...user, inventory: updatedInventory });
+            }
+
             setTransactions(prev => [newTransaction, ...prev]);
             setCredits(prev => prev - total);
             setCart([]);
             soundManager.playPurchase();
-            return { success: true, message: 'TRANSACTION COMPLETE. ITEMS TRANSFERRED.' };
+            return { success: true, message: 'TRANSACTION COMPLETE. ITEMS TRANSFERRED TO INVENTORY.' };
         } else {
             soundManager.playError();
             return { success: false, message: 'INSUFFICIENT FUNDS. TRANSACTION DENIED.' };
         }
+    };
+
+    const equipItem = (item: Item, slot: keyof Loadout) => {
+        if (!user) return;
+        const updatedLoadout = { ...user.loadout, [slot]: item };
+        setUser({ ...user, loadout: updatedLoadout });
+        soundManager.playClick();
+    };
+
+    const unequipItem = (slot: keyof Loadout) => {
+        if (!user) return;
+        const updatedLoadout = { ...user.loadout, [slot]: null };
+        setUser({ ...user, loadout: updatedLoadout });
+        soundManager.playClick();
     };
 
     const toggleFavorite = (id: number) => {
@@ -187,6 +233,14 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
                 cart: [],
                 transactions: [],
                 favorites: [],
+                inventory: [],
+                loadout: {
+                    primary: null,
+                    secondary: null,
+                    armor: null,
+                    implant: null,
+                    gear: null
+                },
                 createdAt: Date.now()
             });
 
@@ -253,7 +307,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             setSortBy,
             filteredItems,
             selectedCategory,
-            setSelectedCategory
+            setSelectedCategory,
+            equipItem,
+            unequipItem
         }}>
             {children}
         </StoreContext.Provider>
