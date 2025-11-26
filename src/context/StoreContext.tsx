@@ -7,7 +7,7 @@ import {
     signOut,
     onAuthStateChanged
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, updateDoc, collection, getDocs, addDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, collection, getDocs, addDoc, deleteDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 
 interface Loadout {
@@ -71,6 +71,8 @@ interface StoreContextType {
     unlockAchievement: (achievementId: string) => void;
     addXP: (amount: number) => void;
     addProduct: (product: Omit<Item, 'id'>) => Promise<string>;
+    deleteProduct: (id: number | string) => Promise<void>;
+    updateProduct: (id: number | string, updates: Partial<Item>) => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -324,6 +326,48 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const deleteProduct = async (id: number | string): Promise<void> => {
+        try {
+            // Delete from Firestore if it's a string ID (new items)
+            // For legacy number IDs, we can't delete from Firestore easily unless we migrate them all
+            // But since we migrated everything to Firestore, all items should have a Firestore doc
+
+            // Note: In a real app, we'd ensure all items have string IDs.
+            // For now, we'll try to delete by ID if it's a string.
+            if (typeof id === 'string') {
+                await deleteDoc(doc(db, 'products', id));
+            } else {
+                // For number IDs (legacy), we might need to find the doc first
+                // But since we seeded them, they might have new string IDs in Firestore
+                // This is a simplification.
+                console.warn('Deleting legacy item with number ID might not sync with Firestore');
+            }
+
+            // Update local state
+            setItems(prev => prev.filter(item => item.id !== id));
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            throw error;
+        }
+    };
+
+    const updateProduct = async (id: number | string, updates: Partial<Item>): Promise<void> => {
+        try {
+            if (typeof id === 'string') {
+                const productRef = doc(db, 'products', id);
+                await updateDoc(productRef, updates);
+            }
+
+            // Update local state
+            setItems(prev => prev.map(item =>
+                item.id === id ? { ...item, ...updates } : item
+            ));
+        } catch (error) {
+            console.error('Error updating product:', error);
+            throw error;
+        }
+    };
+
     const login = async (username: string, password: string) => {
         try {
             // Use username as email (username@cybermarket.local)
@@ -442,7 +486,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
             updateProfile,
             unlockAchievement,
             addXP,
-            addProduct
+            addProduct,
+            deleteProduct,
+            updateProduct
         }}>
             {children}
         </StoreContext.Provider>

@@ -3,11 +3,15 @@ import { useStore } from '../../context/StoreContext';
 import { Edit, Trash2, Plus, Upload, X, Loader } from 'lucide-react';
 import { storage } from '../../firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { type Item } from '../../data/items';
 
 export const ProductManager: React.FC = () => {
-    const { items, addProduct } = useStore();
+    const { items, addProduct, deleteProduct, updateProduct } = useStore();
     const [showForm, setShowForm] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    // Edit Mode State
+    const [editingId, setEditingId] = useState<number | string | null>(null);
 
     // Form State
     const [name, setName] = useState('');
@@ -16,6 +20,38 @@ export const ProductManager: React.FC = () => {
     const [price, setPrice] = useState('');
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+    const resetForm = () => {
+        setShowForm(false);
+        setEditingId(null);
+        setName('');
+        setType('gear');
+        setRarity('common');
+        setPrice('');
+        setImageFile(null);
+        setImagePreview(null);
+    };
+
+    const handleEdit = (product: Item) => {
+        setEditingId(product.id);
+        setName(product.name);
+        setType(product.type);
+        setRarity(product.rarity);
+        setPrice(product.price.toString());
+        setImagePreview(product.image);
+        setShowForm(true);
+    };
+
+    const handleDelete = async (id: number | string) => {
+        if (window.confirm('Are you sure you want to delete this product?')) {
+            try {
+                await deleteProduct(id);
+            } catch (error) {
+                console.error('Failed to delete product:', error);
+                alert('Failed to delete product');
+            }
+        }
+    };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
@@ -27,34 +63,49 @@ export const ProductManager: React.FC = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!name || !price || !imageFile) return;
+        if (!name || !price) return;
 
         setLoading(true);
         try {
-            // 1. Upload Image
-            const storageRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
-            const snapshot = await uploadBytes(storageRef, imageFile);
-            const imageUrl = await getDownloadURL(snapshot.ref);
+            let imageUrl = imagePreview;
 
-            // 2. Add Product
-            await addProduct({
-                name,
-                type: type as any,
-                rarity: rarity as any,
-                price: Number(price),
-                image: imageUrl,
-                stats: {} // Default empty stats
-            });
+            // 1. Upload new image if selected
+            if (imageFile) {
+                const storageRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
+                const snapshot = await uploadBytes(storageRef, imageFile);
+                imageUrl = await getDownloadURL(snapshot.ref);
+            }
 
-            // Reset Form
-            setShowForm(false);
-            setName('');
-            setPrice('');
-            setImageFile(null);
-            setImagePreview(null);
+            if (editingId) {
+                // UPDATE EXISTING PRODUCT
+                await updateProduct(editingId, {
+                    name,
+                    type: type as any,
+                    rarity: rarity as any,
+                    price: Number(price),
+                    image: imageUrl || undefined
+                });
+            } else {
+                // CREATE NEW PRODUCT
+                if (!imageUrl) {
+                    alert('Image is required for new products');
+                    setLoading(false);
+                    return;
+                }
+                await addProduct({
+                    name,
+                    type: type as any,
+                    rarity: rarity as any,
+                    price: Number(price),
+                    image: imageUrl,
+                    stats: {} // Default empty stats
+                });
+            }
+
+            resetForm();
         } catch (error) {
-            console.error('Error adding product:', error);
-            alert('Failed to add product');
+            console.error('Error saving product:', error);
+            alert('Failed to save product');
         } finally {
             setLoading(false);
         }
@@ -76,7 +127,10 @@ export const ProductManager: React.FC = () => {
                     PRODUCT INVENTORY
                 </h2>
                 <button
-                    onClick={() => setShowForm(true)}
+                    onClick={() => {
+                        resetForm();
+                        setShowForm(true);
+                    }}
                     style={{
                         background: 'rgba(0, 243, 255, 0.1)',
                         border: '1px solid #00f3ff',
@@ -166,10 +220,16 @@ export const ProductManager: React.FC = () => {
                                 </td>
                                 <td style={tableCellStyle}>
                                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                                        <button style={actionButtonStyle('#00f3ff')}>
+                                        <button
+                                            onClick={() => handleEdit(product)}
+                                            style={actionButtonStyle('#00f3ff')}
+                                        >
                                             <Edit size={16} />
                                         </button>
-                                        <button style={actionButtonStyle('#ff0055')}>
+                                        <button
+                                            onClick={() => handleDelete(product.id)}
+                                            style={actionButtonStyle('#ff0055')}
+                                        >
                                             <Trash2 size={16} />
                                         </button>
                                     </div>
@@ -180,7 +240,7 @@ export const ProductManager: React.FC = () => {
                 </table>
             </div>
 
-            {/* Add Product Modal */}
+            {/* Add/Edit Product Modal */}
             {showForm && (
                 <div style={{
                     position: 'fixed',
@@ -213,10 +273,10 @@ export const ProductManager: React.FC = () => {
                                 color: '#00f3ff',
                                 fontSize: '1.2rem'
                             }}>
-                                ADD NEW PRODUCT
+                                {editingId ? 'EDIT PRODUCT' : 'ADD NEW PRODUCT'}
                             </h3>
                             <button
-                                onClick={() => setShowForm(false)}
+                                onClick={resetForm}
                                 style={{
                                     background: 'transparent',
                                     border: 'none',
@@ -327,8 +387,8 @@ export const ProductManager: React.FC = () => {
                                     gap: '10px'
                                 }}
                             >
-                                {loading ? <Loader className="spin" size={18} /> : <Plus size={18} />}
-                                {loading ? 'CREATING...' : 'CREATE PRODUCT'}
+                                {loading ? <Loader className="spin" size={18} /> : (editingId ? <Edit size={18} /> : <Plus size={18} />)}
+                                {loading ? 'SAVING...' : (editingId ? 'UPDATE PRODUCT' : 'CREATE PRODUCT')}
                             </button>
                         </form>
                     </div>
