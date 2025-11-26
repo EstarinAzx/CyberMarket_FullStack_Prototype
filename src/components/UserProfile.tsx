@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { motion } from 'framer-motion';
-import { X, Edit2, Trophy, Star } from 'lucide-react';
+import { X, Edit2, Trophy, Star, Upload } from 'lucide-react';
 import { avatars } from '../data/avatars';
 import { achievements } from '../data/achievements';
+import { storage } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { doc, updateDoc } from 'firebase/firestore';
+import { db } from '../firebase';
 
 interface UserProfileProps {
     onClose: () => void;
@@ -14,12 +18,78 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
     const [isEditingBio, setIsEditingBio] = useState(false);
     const [bioText, setBioText] = useState(user?.profile.bio || '');
     const [selectedAvatar, setSelectedAvatar] = useState(user?.profile.avatar || 'netrunner');
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [uploadedAvatarUrl, setUploadedAvatarUrl] = useState<string | null>(null);
+    const [isSaving, setIsSaving] = useState(false);
 
     if (!user) return null;
 
-    const handleSaveProfile = async () => {
-        await updateProfile(selectedAvatar, bioText);
-        setIsEditingBio(false);
+    // Track if any changes have been made
+    const hasChanges = 
+        bioText !== user.profile.bio || 
+        selectedAvatar !== user.profile.avatar || 
+        selectedFile !== null;
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select a valid image file');
+                return;
+            }
+            // Validate file size (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB');
+                return;
+            }
+            setSelectedFile(file);
+            // Create preview URL
+            const previewUrl = URL.createObjectURL(file);
+            setUploadedAvatarUrl(previewUrl);
+        }
+    };
+
+    const saveChanges = async () => {
+        if (!user.uid) return;
+        
+        setIsSaving(true);
+        try {
+            let avatarUrl = user.profile.avatarUrl;
+
+            // Upload file to Firebase Storage if a new file was selected
+            if (selectedFile) {
+                const storageRef = ref(storage, `avatars/${user.uid}`);
+                await uploadBytes(storageRef, selectedFile);
+                avatarUrl = await getDownloadURL(storageRef);
+            }
+
+            // Update Firestore profile
+            const userDocRef = doc(db, 'users', user.uid);
+            const updates: any = {
+                'profile.bio': bioText,
+                'profile.avatar': selectedAvatar
+            };
+            if (avatarUrl) {
+                updates['profile.avatarUrl'] = avatarUrl;
+            }
+
+            await updateDoc(userDocRef, updates);
+
+            // Update local state
+            await updateProfile(selectedAvatar, bioText, avatarUrl);
+            
+            // Reset state
+            setSelectedFile(null);
+            setIsEditingBio(false);
+            
+            alert('Profile updated successfully!');
+        } catch (error: any) {
+            console.error('Error updating profile:', error);
+            alert(`Failed to update profile: ${error.message}`);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const daysSinceJoined = Math.floor((Date.now() - user.profile.joinedDate) / (1000 * 60 * 60 * 24));
@@ -83,9 +153,12 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                             justifyContent: 'center',
                             fontSize: '3rem',
                             background: `rgba(${hexToRgb(currentAvatar.color)}, 0.1)`,
-                            boxShadow: `0 0 20px ${currentAvatar.color}40`
+                            boxShadow: `0 0 20px ${currentAvatar.color}40`,
+                            backgroundImage: uploadedAvatarUrl || user.profile.avatarUrl ? `url(${uploadedAvatarUrl || user.profile.avatarUrl})` : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
                         }}>
-                            {currentAvatar.icon}
+                            {!uploadedAvatarUrl && !user.profile.avatarUrl && currentAvatar.icon}
                         </div>
                         <div>
                             <h1 style={{
@@ -198,6 +271,55 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                         }}>
                             SELECT AVATAR
                         </h3>
+                        
+                        {/* File Upload Section */}
+                        <div style={{ marginBottom: '20px' }}>
+                            <label style={{
+                                display: 'inline-block',
+                                background: 'rgba(74, 222, 128, 0.1)',
+                                border: '1px solid #4ade80',
+                                color: '#4ade80',
+                                padding: '12px 24px',
+                                fontFamily: 'Orbitron',
+                                fontSize: '0.9rem',
+                                cursor: 'pointer',
+                                clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)',
+                                transition: 'all 0.3s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                width: 'fit-content'
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = 'rgba(74, 222, 128, 0.2)';
+                                e.currentTarget.style.boxShadow = '0 0 20px rgba(74, 222, 128, 0.3)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = 'rgba(74, 222, 128, 0.1)';
+                                e.currentTarget.style.boxShadow = 'none';
+                            }}
+                            >
+                                <Upload size={18} />
+                                UPLOAD CUSTOM AVATAR
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    style={{ display: 'none' }}
+                                />
+                            </label>
+                            {selectedFile && (
+                                <div style={{
+                                    marginTop: '10px',
+                                    fontFamily: 'Rajdhani',
+                                    fontSize: '0.9rem',
+                                    color: '#4ade80'
+                                }}>
+                                    Selected: {selectedFile.name}
+                                </div>
+                            )}
+                        </div>
+
                         <div style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
@@ -312,7 +434,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                                     marginTop: '10px'
                                 }}>
                                     <button
-                                        onClick={handleSaveProfile}
+                                        onClick={saveChanges}
                                         style={{
                                             background: '#4ade80',
                                             border: 'none',
@@ -357,6 +479,46 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                             </div>
                         )}
                     </div>
+
+                    {/* Save Changes Button */}
+                    {hasChanges && (
+                        <div style={{ marginBottom: '30px' }}>
+                            <button
+                                onClick={saveChanges}
+                                disabled={isSaving}
+                                style={{
+                                    background: '#4ade80',
+                                    border: 'none',
+                                    color: '#000',
+                                    padding: '15px 40px',
+                                    fontFamily: 'Orbitron',
+                                    fontSize: '1rem',
+                                    cursor: isSaving ? 'not-allowed' : 'pointer',
+                                    clipPath: 'polygon(15px 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%, 0 15px)',
+                                    boxShadow: '0 0 30px rgba(74, 222, 128, 0.5)',
+                                    transition: 'all 0.3s ease',
+                                    fontWeight: 'bold',
+                                    letterSpacing: '2px',
+                                    opacity: isSaving ? 0.6 : 1,
+                                    width: '100%'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (!isSaving) {
+                                        e.currentTarget.style.boxShadow = '0 0 50px rgba(74, 222, 128, 0.8)';
+                                        e.currentTarget.style.transform = 'translateY(-2px)';
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (!isSaving) {
+                                        e.currentTarget.style.boxShadow = '0 0 30px rgba(74, 222, 128, 0.5)';
+                                        e.currentTarget.style.transform = 'translateY(0)';
+                                    }
+                                }}
+                            >
+                                {isSaving ? 'SAVING...' : 'SAVE CHANGES'}
+                            </button>
+                        </div>
+                    )}
 
                     {/* Achievements */}
                     <div>

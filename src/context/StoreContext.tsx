@@ -32,6 +32,7 @@ interface User {
         xp: number;
         achievements: string[];
         joinedDate: number;
+        avatarUrl?: string;
     };
 }
 
@@ -67,7 +68,7 @@ interface StoreContextType {
     setSelectedCategory: (category: string) => void;
     equipItem: (item: Item, slot: keyof Loadout) => void;
     unequipItem: (slot: keyof Loadout) => void;
-    updateProfile: (avatar: string, bio: string) => Promise<void>;
+    updateProfile: (avatar: string, bio: string, avatarUrl?: string) => Promise<void>;
     unlockAchievement: (achievementId: string) => void;
     addXP: (amount: number) => void;
     addProduct: (product: Omit<Item, 'id'>) => Promise<string>;
@@ -293,9 +294,9 @@ export const StoreProvider = ({ children }: { children: ReactNode }) => {
         soundManager.playClick();
     };
 
-    const updateProfile = async (avatar: string, bio: string) => {
+    const updateProfile = async (avatar: string, bio: string, avatarUrl?: string) => {
         if (!user) return;
-        const updatedProfile = { ...user.profile, avatar, bio };
+        const updatedProfile = { ...user.profile, avatar, bio, ...(avatarUrl ? { avatarUrl } : {}) };
         setUser({ ...user, profile: updatedProfile });
         soundManager.playClick();
     };
