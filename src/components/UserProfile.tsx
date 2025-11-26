@@ -275,7 +275,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                         {/* File Upload Section */}
                         <div style={{ marginBottom: '20px' }}>
                             <label style={{
-                                display: 'inline-block',
+                                display: 'inline-flex',
                                 background: 'rgba(74, 222, 128, 0.1)',
                                 border: '1px solid #4ade80',
                                 color: '#4ade80',
@@ -285,7 +285,6 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                                 cursor: 'pointer',
                                 clipPath: 'polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px)',
                                 transition: 'all 0.3s ease',
-                                display: 'flex',
                                 alignItems: 'center',
                                 gap: '10px',
                                 width: 'fit-content'
