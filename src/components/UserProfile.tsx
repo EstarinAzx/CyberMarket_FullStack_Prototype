@@ -429,27 +429,13 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                                 />
                                 <div style={{
                                     display: 'flex',
-                                    gap: '10px',
+                                    justifyContent: 'flex-end',
                                     marginTop: '10px'
                                 }}>
                                     <button
-                                        onClick={saveChanges}
-                                        style={{
-                                            background: '#4ade80',
-                                            border: 'none',
-                                            color: '#000',
-                                            padding: '8px 20px',
-                                            fontFamily: 'Orbitron',
-                                            cursor: 'pointer'
-                                        }}
-                                    >
-                                        SAVE
-                                    </button>
-                                    <button
                                         onClick={() => {
                                             setIsEditingBio(false);
-                                            setBioText(user.profile.bio);
-                                            setSelectedAvatar(user.profile.avatar);
+                                            setBioText(user.profile.bio || '');
                                         }}
                                         style={{
                                             background: 'transparent',
@@ -460,7 +446,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                                             cursor: 'pointer'
                                         }}
                                     >
-                                        CANCEL
+                                        DONE
                                     </button>
                                 </div>
                             </div>
