@@ -49,7 +49,8 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                     width: '100%',
                     background: '#0a0a0a',
                     color: '#00f0ff',
-                    border: '1px solid #333',
+                    border: '1px solid #00f0ff',
+                    borderLeft: '3px solid #00f0ff',
                     padding: '8px 30px 8px 10px',
                     fontFamily: 'Orbitron',
                     fontSize: '0.9rem',
@@ -57,7 +58,8 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     position: 'relative',
-                    transition: 'all 0.2s'
+                    transition: 'all 0.2s',
+                    boxShadow: '0 0 10px rgba(0,240,255,0.1)'
                 }}
             >
                 <span>{selectedOption?.label || placeholder}</span>
