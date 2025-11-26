@@ -38,7 +38,7 @@ export const ProductGrid: React.FC = () => {
                 Displays all filtered items as ProductCard components
                 ============================================ */}
             <motion.main
-                className="product-grid"
+                className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 overflow-y-auto p-4 [scrollbar-width:thin] [scrollbar-color:var(--cyber-cyan)_rgba(0,0,0,0.3)] items-start content-start bg-black/20"
                 id="product-grid"
                 layout  // Animate position changes when items are filtered/sorted
             >

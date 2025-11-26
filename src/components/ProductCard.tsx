@@ -42,57 +42,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
             exit={{ opacity: 0, y: -20 }}
             onClick={() => onSelect(item)}
             onMouseEnter={() => soundManager.playHover()}
+            className="relative cursor-pointer transition-all duration-200 flex flex-col h-full bg-gradient-to-br from-[#141923]/95 to-[#0f1219]/90 border border-cyber-cyan/40 hover:border-[var(--rarity-color)] hover:shadow-[0_0_15px_rgba(var(--rarity-rgb),0.3)]"
             style={{
-                background: 'rgba(17, 17, 17, 0.95)',
-                border: `1px solid rgba(0, 240, 255, 0.4)`,
-                position: 'relative',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                display: 'flex',
-                flexDirection: 'column',
-                height: '100%'
-            }}
+                '--rarity-color': rarityColor,
+                '--rarity-rgb': rarityColor === '#fbbf24' ? '251,191,36' :
+                    rarityColor === '#a855f7' ? '168,85,247' :
+                        rarityColor === '#06b6d4' ? '6,182,212' : '0,240,255'
+            } as React.CSSProperties}
             whileHover={{
                 borderColor: rarityColor,
                 boxShadow: `0 0 15px ${rarityColor}30`
             }}
         >
             {/* Corner Brackets */}
-            <div style={{ position: 'absolute', top: 4, left: 4, width: '15px', height: '15px', borderTop: '2px solid #00f0ff', borderLeft: '2px solid #00f0ff' }} />
-            <div style={{ position: 'absolute', top: 4, right: 4, width: '15px', height: '15px', borderTop: '2px solid #00f0ff', borderRight: '2px solid #00f0ff' }} />
-            <div style={{ position: 'absolute', bottom: 4, left: 4, width: '15px', height: '15px', borderBottom: '2px solid #00f0ff', borderLeft: '2px solid #00f0ff' }} />
-            <div style={{ position: 'absolute', bottom: 4, right: 4, width: '15px', height: '15px', borderBottom: '2px solid #00f0ff', borderRight: '2px solid #00f0ff' }} />
+            <div className="absolute top-1 left-1 w-[15px] h-[15px] border-t-2 border-l-2 border-cyber-cyan" />
+            <div className="absolute top-1 right-1 w-[15px] h-[15px] border-t-2 border-r-2 border-cyber-cyan" />
+            <div className="absolute bottom-1 left-1 w-[15px] h-[15px] border-b-2 border-l-2 border-cyber-cyan" />
+            <div className="absolute bottom-1 right-1 w-[15px] h-[15px] border-b-2 border-r-2 border-cyber-cyan" />
 
             {/* Rarity Badge */}
-            <div style={{
-                position: 'absolute',
-                top: '12px',
-                right: '12px',
-                background: rarityColor,
-                color: '#000',
-                padding: '3px 10px',
-                fontFamily: 'Orbitron',
-                fontSize: '0.65rem',
-                fontWeight: 'bold',
-                letterSpacing: '1px',
-                zIndex: 10
-            }}>
+            <div
+                className="absolute top-3 right-3 text-black px-2.5 py-0.5 font-orbitron text-[0.65rem] font-bold tracking-wider z-10"
+                style={{ background: rarityColor }}
+            >
                 {item.rarity.toUpperCase()}
             </div>
 
             {/* Favorite Button */}
             <button
                 onClick={handleFavorite}
-                style={{
-                    position: 'absolute',
-                    top: '12px',
-                    left: '12px',
-                    background: 'rgba(0,0,0,0.7)',
-                    border: '1px solid ' + (isFavorite ? '#f59e0b' : 'rgba(0, 240, 255, 0.4)'),
-                    padding: '5px',
-                    cursor: 'pointer',
-                    zIndex: 10
-                }}
+                className="absolute top-3 left-3 bg-black/70 border px-1.5 py-1.5 cursor-pointer z-10 transition-colors"
+                style={{ borderColor: isFavorite ? '#f59e0b' : 'rgba(0, 240, 255, 0.4)' }}
             >
                 <Heart
                     size={16}
@@ -102,82 +82,37 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
             </button>
 
             {/* Image Section */}
-            <div style={{
-                height: '180px',
-                overflow: 'hidden',
-                borderBottom: '1px solid rgba(0, 240, 255, 0.3)',
-                position: 'relative'
-            }}>
+            <div className="h-[180px] overflow-hidden border-b border-cyber-cyan/30 relative">
                 <img
                     src={item.image}
                     alt={item.name}
-                    style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover',
-                        opacity: 0.85
-                    }}
+                    className="w-full h-full object-cover opacity-85 transition-all duration-300 saturate-[0.8] hover:opacity-90 hover:saturate-100 hover:scale-105"
                 />
             </div>
 
             {/* Content Section */}
-            <div style={{ padding: '15px', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="p-4 flex-1 flex flex-col gap-3">
                 {/* Title */}
-                <div style={{
-                    fontFamily: 'Orbitron',
-                    fontSize: '1rem',
-                    color: '#00f0ff',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                    lineHeight: '1.2'
-                }}>
+                <div className="font-orbitron text-base text-cyber-cyan tracking-wide uppercase leading-tight">
                     {item.name}
                 </div>
 
                 {/* Type */}
-                <div style={{
-                    fontFamily: 'Orbitron',
-                    fontSize: '0.85rem',
-                    color: '#888',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
-                }}>
+                <div className="font-orbitron text-[0.85rem] text-text-dim uppercase tracking-wide">
                     [ {item.type} ]
                 </div>
 
                 {/* Stats Grid */}
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(2, 1fr)',
-                    gap: '8px',
-                    flex: 1
-                }}>
+                <div className="grid grid-cols-2 gap-2 flex-1">
                     {Object.entries(item.stats).map(([key, val]) => (
                         <div
                             key={key}
-                            style={{
-                                background: 'rgba(0, 0, 0, 0.4)',
-                                border: '1px solid rgba(0, 240, 255, 0.3)',
-                                padding: '6px 8px',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: '2px'
-                            }}
+                            className="bg-black/40 border border-cyber-cyan/30 px-2 py-1.5 flex flex-col gap-0.5"
                         >
-                            <div style={{
-                                fontFamily: 'Courier New',
-                                fontSize: '0.65rem',
-                                color: '#666',
-                                textTransform: 'uppercase'
-                            }}>
+                            <div className="font-mono text-[0.65rem] text-text-dim uppercase">
                                 {key}
                             </div>
-                            <div style={{
-                                fontFamily: 'Orbitron',
-                                fontSize: '0.9rem',
-                                color: '#00f0ff',
-                                fontWeight: 'bold'
-                            }}>
+                            <div className="font-orbitron text-sm text-cyber-cyan font-bold">
                                 {val}
                             </div>
                         </div>
@@ -185,40 +120,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
                 </div>
 
                 {/* Price */}
-                <div style={{
-                    fontFamily: 'Orbitron',
-                    fontSize: '1.2rem',
-                    color: '#fbbf24',
-                    textAlign: 'right',
-                    letterSpacing: '1px',
-                    marginTop: '8px'
-                }}>
+                <div className="font-orbitron text-xl text-cyber-yellow text-right tracking-wide mt-2">
                     ¥ {item.price.toLocaleString()}
                 </div>
 
                 {/* Add to Cart Button */}
                 <button
                     onClick={handleBuy}
-                    style={{
-                        background: 'transparent',
-                        border: '1px solid #00f0ff',
-                        color: '#00f0ff',
-                        padding: '10px',
-                        fontFamily: 'Orbitron',
-                        fontSize: '0.85rem',
-                        letterSpacing: '1px',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s',
-                        textTransform: 'uppercase'
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(0, 240, 255, 0.1)';
-                        e.currentTarget.style.boxShadow = '0 0 10px rgba(0, 240, 255, 0.3)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'transparent';
-                        e.currentTarget.style.boxShadow = 'none';
-                    }}
+                    className="bg-transparent border border-cyber-cyan text-cyber-cyan px-2.5 py-2.5 font-orbitron text-[0.85rem] tracking-wide cursor-pointer transition-all duration-200 uppercase hover:bg-cyber-cyan/10 hover:shadow-[0_0_10px_rgba(0,240,255,0.3)]"
                 >
                     ADD TO LOADOUT
                 </button>
