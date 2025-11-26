@@ -13,6 +13,7 @@ export interface Item {
     stats: ItemStats;
     rarity: ItemRarity;
     description?: string;
+    modelPath?: string;
 }
 
 export const items: Item[] = [
@@ -28,7 +29,8 @@ export const items: Item[] = [
             rpm: "600",
             weight: "4.5kg"
         },
-        description: "Militech's flagship electromagnetic precision rifle. Capable of piercing light cover and neutralizing targets at extreme ranges."
+        description: "Militech's flagship electromagnetic precision rifle. Capable of piercing light cover and neutralizing targets at extreme ranges.",
+        modelPath: "/models/quant9mm.fbx"
     },
     {
         id: 2,

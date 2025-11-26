@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useStore } from '../context/StoreContext';
 import { motion } from 'framer-motion';
-import { Shield, Box, Cpu, Crosshair } from 'lucide-react';
+import { Shield, Box, Cpu, Crosshair, BoxSelect } from 'lucide-react';
 import { type Item } from '../data/items';
+import { Model3DViewer } from './Model3DViewer';
 
 export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const { user, equipItem, unequipItem } = useStore();
+    const [viewing3D, setViewing3D] = useState<Item | null>(null);
 
     if (!user) return null;
 
@@ -220,13 +222,38 @@ export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                                         fontWeight: 'bold',
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden',
-                                        textOverflow: 'ellipsis'
+                                        textOverflow: 'ellipsis',
+                                        marginBottom: '5px'
                                     }}>
                                         {item.name}
                                     </div>
-                                    <div style={{ fontSize: '0.7rem', color: '#666' }}>
+                                    <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '8px' }}>
                                         {item.type.toUpperCase()}
                                     </div>
+                                    {item.modelPath && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setViewing3D(item);
+                                            }}
+                                            style={{
+                                                background: 'rgba(0, 243, 255, 0.1)',
+                                                border: '1px solid #00f3ff',
+                                                color: '#00f3ff',
+                                                padding: '4px 8px',
+                                                fontSize: '0.65rem',
+                                                fontFamily: 'Orbitron',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '4px',
+                                                width: '100%',
+                                                justifyContent: 'center'
+                                            }}
+                                        >
+                                            <BoxSelect size={12} />
+                                            VIEW 3D
+                                        </button>
+                                    )}
                                 </div>
                             </motion.div>
                         ))}
@@ -244,6 +271,15 @@ export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     )}
                 </div>
             </motion.div>
+
+            {/* 3D Model Viewer */}
+            {viewing3D && viewing3D.modelPath && (
+                <Model3DViewer
+                    modelPath={viewing3D.modelPath}
+                    itemName={viewing3D.name}
+                    onClose={() => setViewing3D(null)}
+                />
+            )}
         </div>
     );
 };
