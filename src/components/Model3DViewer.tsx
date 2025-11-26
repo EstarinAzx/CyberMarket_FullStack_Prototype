@@ -1,7 +1,8 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useLayoutEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, useFBX, Stage } from '@react-three/drei';
 import { X } from 'lucide-react';
+import * as THREE from 'three';
 
 interface Model3DViewerProps {
     modelPath: string;
@@ -11,6 +12,23 @@ interface Model3DViewerProps {
 
 const Model: React.FC<{ modelPath: string }> = ({ modelPath }) => {
     const fbx = useFBX(modelPath);
+
+    useLayoutEffect(() => {
+        fbx.traverse((child: any) => {
+            if (child.isMesh) {
+                child.castShadow = true;
+                child.receiveShadow = true;
+                // Apply metallic black material to match the sample image
+                child.material = new THREE.MeshStandardMaterial({
+                    color: '#1a1a1a', // Dark grey/black
+                    roughness: 0.3,
+                    metalness: 0.8,
+                    side: THREE.DoubleSide
+                });
+            }
+        });
+    }, [fbx]);
+
     return <primitive object={fbx} />;
 };
 
