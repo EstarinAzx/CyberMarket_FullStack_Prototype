@@ -252,6 +252,25 @@
   }
 }
 
+/* Global scrollbar styling */
+*::-webkit-scrollbar {
+  width: 4px;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #00f0ff;
+  box-shadow: 0 0 5px #00f0ff;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #00f0ff rgba(0, 0, 0, 0.3);
+}
+
 
 /* ====================================================================================
 Animation Keyframes 

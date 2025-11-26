@@ -30,7 +30,7 @@ export const Layout: React.FC = () => {
     const categories = ['all', 'weapon', 'implant', 'gear'];
 
     return (
-        <div className="flex flex-col h-screen overflow-hidden relative z-10 scale-[1.55] origin-top w-[64%] h-[64vh] mx-auto">
+        <div className="flex flex-col h-[64vh] overflow-hidden relative z-10 scale-[1.55] origin-top w-[64%] mx-auto">
             <div className="crt-overlay"></div>
             <div className="scanline"></div>
 
@@ -111,8 +111,8 @@ export const Layout: React.FC = () => {
                 </div>
             </header>
 
-            <div className="grid grid-cols-[180px_1fr_320px] gap-0 flex-1 overflow-hidden bg-black/30">
-                <nav className="bg-gradient-to-b from-[#12141a]/95 to-[#0c0e12]/90 py-4 px-2.5 border-r border-cyber-cyan/20 flex flex-col justify-between relative before:content-[''] before:absolute before:top-0 before:right-0 before:w-px before:h-[30%] before:bg-gradient-to-b before:from-cyber-cyan before:to-transparent">
+            <div className="grid grid-cols-[180px_1fr_320px] grid-rows-[1fr] gap-0 flex-1 min-h-0 bg-black/30">
+                <nav className="bg-gradient-to-b from-[#12141a]/95 to-[#0c0e12]/90 py-4 px-2.5 border-r border-cyber-cyan/20 flex flex-col justify-between relative overflow-hidden before:content-[''] before:absolute before:top-0 before:right-0 before:w-px before:h-[30%] before:bg-gradient-to-b before:from-cyber-cyan before:to-transparent">
                     <ul id="category-list">
                         {categories.map(cat => (
                             <li
