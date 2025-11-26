@@ -30,10 +30,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
         legendary: '#fbbf24',
         epic: '#a855f7',
         rare: '#06b6d4',
-        common: '#4ade80'
+        common: '#00f0ff'
     };
 
-    const rarityColor = rarityColors[item.rarity] || '#4ade80';
+    const rarityColor = rarityColors[item.rarity] || '#00f0ff';
 
     return (
         <motion.div
@@ -44,7 +44,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
             onMouseEnter={() => soundManager.playHover()}
             style={{
                 background: 'rgba(17, 17, 17, 0.95)',
-                border: `1px solid rgba(34, 197, 94, 0.4)`,
+                border: `1px solid rgba(0, 240, 255, 0.4)`,
                 position: 'relative',
                 cursor: 'pointer',
                 transition: 'all 0.2s',
@@ -58,10 +58,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
             }}
         >
             {/* Corner Brackets */}
-            <div style={{ position: 'absolute', top: 4, left: 4, width: '15px', height: '15px', borderTop: '2px solid #4ade80', borderLeft: '2px solid #4ade80' }} />
-            <div style={{ position: 'absolute', top: 4, right: 4, width: '15px', height: '15px', borderTop: '2px solid #4ade80', borderRight: '2px solid #4ade80' }} />
-            <div style={{ position: 'absolute', bottom: 4, left: 4, width: '15px', height: '15px', borderBottom: '2px solid #4ade80', borderLeft: '2px solid #4ade80' }} />
-            <div style={{ position: 'absolute', bottom: 4, right: 4, width: '15px', height: '15px', borderBottom: '2px solid #4ade80', borderRight: '2px solid #4ade80' }} />
+            <div style={{ position: 'absolute', top: 4, left: 4, width: '15px', height: '15px', borderTop: '2px solid #00f0ff', borderLeft: '2px solid #00f0ff' }} />
+            <div style={{ position: 'absolute', top: 4, right: 4, width: '15px', height: '15px', borderTop: '2px solid #00f0ff', borderRight: '2px solid #00f0ff' }} />
+            <div style={{ position: 'absolute', bottom: 4, left: 4, width: '15px', height: '15px', borderBottom: '2px solid #00f0ff', borderLeft: '2px solid #00f0ff' }} />
+            <div style={{ position: 'absolute', bottom: 4, right: 4, width: '15px', height: '15px', borderBottom: '2px solid #00f0ff', borderRight: '2px solid #00f0ff' }} />
 
             {/* Rarity Badge */}
             <div style={{
@@ -88,7 +88,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
                     top: '12px',
                     left: '12px',
                     background: 'rgba(0,0,0,0.7)',
-                    border: '1px solid ' + (isFavorite ? '#f59e0b' : 'rgba(34, 197, 94, 0.4)'),
+                    border: '1px solid ' + (isFavorite ? '#f59e0b' : 'rgba(0, 240, 255, 0.4)'),
                     padding: '5px',
                     cursor: 'pointer',
                     zIndex: 10
@@ -97,7 +97,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
                 <Heart
                     size={16}
                     fill={isFavorite ? '#f59e0b' : 'none'}
-                    color={isFavorite ? '#f59e0b' : '#4ade80'}
+                    color={isFavorite ? '#f59e0b' : '#00f0ff'}
                 />
             </button>
 
@@ -105,7 +105,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
             <div style={{
                 height: '180px',
                 overflow: 'hidden',
-                borderBottom: '1px solid rgba(34, 197, 94, 0.3)',
+                borderBottom: '1px solid rgba(0, 240, 255, 0.3)',
                 position: 'relative'
             }}>
                 <img
@@ -126,7 +126,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
                 <div style={{
                     fontFamily: 'Orbitron',
                     fontSize: '1rem',
-                    color: '#4ade80',
+                    color: '#00f0ff',
                     letterSpacing: '1px',
                     textTransform: 'uppercase',
                     lineHeight: '1.2'
@@ -157,7 +157,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
                             key={key}
                             style={{
                                 background: 'rgba(0, 0, 0, 0.4)',
-                                border: '1px solid rgba(34, 197, 94, 0.3)',
+                                border: '1px solid rgba(0, 240, 255, 0.3)',
                                 padding: '6px 8px',
                                 display: 'flex',
                                 flexDirection: 'column',
@@ -175,7 +175,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
                             <div style={{
                                 fontFamily: 'Orbitron',
                                 fontSize: '0.9rem',
-                                color: '#4ade80',
+                                color: '#00f0ff',
                                 fontWeight: 'bold'
                             }}>
                                 {val}
@@ -201,8 +201,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
                     onClick={handleBuy}
                     style={{
                         background: 'transparent',
-                        border: '1px solid #4ade80',
-                        color: '#4ade80',
+                        border: '1px solid #00f0ff',
+                        color: '#00f0ff',
                         padding: '10px',
                         fontFamily: 'Orbitron',
                         fontSize: '0.85rem',
@@ -212,8 +212,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item, onSelect }) => {
                         textTransform: 'uppercase'
                     }}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(74, 222, 128, 0.1)';
-                        e.currentTarget.style.boxShadow = '0 0 10px rgba(74, 222, 128, 0.3)';
+                        e.currentTarget.style.background = 'rgba(0, 240, 255, 0.1)';
+                        e.currentTarget.style.boxShadow = '0 0 10px rgba(0, 240, 255, 0.3)';
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.background = 'transparent';

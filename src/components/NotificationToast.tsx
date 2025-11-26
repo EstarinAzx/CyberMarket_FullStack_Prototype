@@ -25,9 +25,9 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({ notificati
             icon: AlertTriangle
         },
         info: {
-            border: '1px solid #4ade80',
+            border: '1px solid #00f0ff',
             background: 'rgba(0, 20, 40, 0.9)',
-            color: '#4ade80',
+            color: '#00f0ff',
             icon: Info
         }
     };

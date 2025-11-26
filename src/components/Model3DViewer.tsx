@@ -49,7 +49,7 @@ export const Model3DViewer: React.FC<Model3DViewerProps> = ({ modelPath, itemNam
         }}>
             <div style={{
                 padding: '20px 30px',
-                borderBottom: '1px solid #4ade80',
+                borderBottom: '1px solid #00f0ff',
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
@@ -58,7 +58,7 @@ export const Model3DViewer: React.FC<Model3DViewerProps> = ({ modelPath, itemNam
                 <div>
                     <h2 style={{
                         fontFamily: 'Orbitron',
-                        color: '#4ade80',
+                        color: '#00f0ff',
                         fontSize: '1.5rem',
                         marginBottom: '5px'
                     }}>
@@ -99,10 +99,10 @@ export const Model3DViewer: React.FC<Model3DViewerProps> = ({ modelPath, itemNam
                     left: '50%',
                     transform: 'translateX(-50%)',
                     background: 'rgba(0, 243, 255, 0.1)',
-                    border: '1px solid #4ade80',
+                    border: '1px solid #00f0ff',
                     padding: '15px 30px',
                     fontFamily: 'Orbitron',
-                    color: '#4ade80',
+                    color: '#00f0ff',
                     fontSize: '0.9rem',
                     display: 'flex',
                     gap: '30px',

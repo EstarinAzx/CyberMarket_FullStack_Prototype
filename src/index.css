@@ -126,7 +126,7 @@ body {
 .scanline {
   width: 100%;
   height: 8px;
-  background: linear-gradient(to bottom, transparent, rgba(34, 197, 94, 0.03), transparent);
+  background: linear-gradient(to bottom, transparent, rgba(0, 240, 255, 0.03), transparent);
   position: fixed;
   z-index: 999;
   animation: scan 8s linear infinite;

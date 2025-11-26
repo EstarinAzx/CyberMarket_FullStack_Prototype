@@ -35,7 +35,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ isOpen, 
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                             <h2 style={{
                                 fontFamily: 'Orbitron',
-                                color: '#4ade80',
+                                color: '#00f0ff',
                                 fontSize: '1.8rem'
                             }}>
                                 TRANSACTION LOG
