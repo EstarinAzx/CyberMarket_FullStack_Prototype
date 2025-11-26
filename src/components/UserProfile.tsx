@@ -48,9 +48,9 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                     width: '95%',
                     maxWidth: '900px',
                     maxHeight: '90vh',
-                    background: '#0a0a0a',
-                    border: '2px solid #00f3ff',
-                    boxShadow: '0 0 30px rgba(0, 243, 255, 0.3)',
+                    background: 'rgba(10, 10, 10, 0.95)',
+                    border: '1px solid #00f3ff',
+                    boxShadow: '0 0 50px rgba(0, 243, 255, 0.15), inset 0 0 20px rgba(0, 243, 255, 0.05)',
                     display: 'flex',
                     flexDirection: 'column',
                     position: 'relative',
@@ -58,6 +58,11 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                     overflow: 'hidden'
                 }}
             >
+                {/* Decorative Corner Lines */}
+                <div style={{ position: 'absolute', top: 0, left: 0, width: '100px', height: '2px', background: '#00f3ff', boxShadow: '0 0 10px #00f3ff' }} />
+                <div style={{ position: 'absolute', top: 0, left: 0, width: '2px', height: '100px', background: '#00f3ff', boxShadow: '0 0 10px #00f3ff' }} />
+                <div style={{ position: 'absolute', bottom: 0, right: 0, width: '100px', height: '2px', background: '#00f3ff', boxShadow: '0 0 10px #00f3ff' }} />
+                <div style={{ position: 'absolute', bottom: 0, right: 0, width: '2px', height: '100px', background: '#00f3ff', boxShadow: '0 0 10px #00f3ff' }} />
                 {/* Header */}
                 <div style={{
                     padding: '20px 30px',
@@ -187,38 +192,59 @@ export const UserProfile: React.FC<UserProfileProps> = ({ onClose }) => {
                             fontFamily: 'Orbitron',
                             color: '#00f3ff',
                             fontSize: '1.2rem',
-                            marginBottom: '15px'
+                            marginBottom: '15px',
+                            borderBottom: '1px solid rgba(0, 243, 255, 0.3)',
+                            paddingBottom: '10px'
                         }}>
                             SELECT AVATAR
                         </h3>
                         <div style={{
                             display: 'grid',
-                            gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
-                            gap: '10px'
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(110px, 1fr))',
+                            gap: '15px'
                         }}>
                             {avatars.map(avatar => (
                                 <button
                                     key={avatar.id}
                                     onClick={() => setSelectedAvatar(avatar.id)}
                                     style={{
-                                        background: selectedAvatar === avatar.id ? `rgba(${hexToRgb(avatar.color)}, 0.2)` : 'rgba(0, 0, 0, 0.3)',
-                                        border: `2px solid ${selectedAvatar === avatar.id ? avatar.color : '#333'}`,
+                                        background: selectedAvatar === avatar.id ? `rgba(${hexToRgb(avatar.color)}, 0.15)` : 'rgba(255, 255, 255, 0.03)',
+                                        border: `1px solid ${selectedAvatar === avatar.id ? avatar.color : 'rgba(255, 255, 255, 0.1)'}`,
                                         padding: '15px',
                                         cursor: 'pointer',
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'center',
-                                        gap: '8px',
-                                        transition: 'all 0.2s'
+                                        gap: '10px',
+                                        transition: 'all 0.3s ease',
+                                        position: 'relative',
+                                        overflow: 'hidden'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.borderColor = avatar.color;
+                                        e.currentTarget.style.background = `rgba(${hexToRgb(avatar.color)}, 0.1)`;
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (selectedAvatar !== avatar.id) {
+                                            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+                                        }
                                     }}
                                 >
-                                    <div style={{ fontSize: '2rem' }}>{avatar.icon}</div>
+                                    <div style={{
+                                        fontSize: '2.2rem',
+                                        filter: selectedAvatar === avatar.id ? `drop-shadow(0 0 10px ${avatar.color})` : 'none',
+                                        transition: 'all 0.3s'
+                                    }}>
+                                        {avatar.icon}
+                                    </div>
                                     <div style={{
                                         fontFamily: 'Orbitron',
-                                        fontSize: '0.75rem',
-                                        color: avatar.color
+                                        fontSize: '0.7rem',
+                                        color: selectedAvatar === avatar.id ? avatar.color : '#888',
+                                        letterSpacing: '1px'
                                     }}>
-                                        {avatar.name}
+                                        {avatar.name.toUpperCase()}
                                     </div>
                                 </button>
                             ))}
