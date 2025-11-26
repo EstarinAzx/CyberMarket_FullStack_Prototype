@@ -54,25 +54,27 @@ export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     width: '90%',
                     maxWidth: '1200px',
                     height: '90%',
-                    background: '#0a0a0a',
-                    border: '1px solid #4ade80',
+                    background: 'linear-gradient(135deg, #0d0d0f 0%, #12141a 100%)',
+                    border: '1px solid #00f0ff',
                     display: 'flex',
                     flexDirection: 'row',
                     overflow: 'hidden',
                     position: 'relative',
-                    boxShadow: '0 0 30px rgba(74, 222, 128, 0.2)'
+                    boxShadow: '0 0 30px rgba(0, 240, 255, 0.2)',
+                    clipPath: 'polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))'
                 }}
             >
                 <button
                     onClick={onClose}
                     style={{
                         position: 'absolute',
-                        top: '20px',
-                        right: '20px',
-                        background: 'none',
-                        border: 'none',
-                        color: '#ff0055',
-                        fontSize: '24px',
+                        top: '15px',
+                        right: '25px',
+                        background: 'rgba(255, 0, 60, 0.1)',
+                        border: '1px solid #ff003c',
+                        color: '#ff003c',
+                        fontSize: '16px',
+                        padding: '8px 12px',
                         cursor: 'pointer',
                         zIndex: 10,
                         fontFamily: 'Orbitron'
@@ -84,53 +86,53 @@ export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 {/* LEFT PANEL: LOADOUT */}
                 <div className="loadout-panel" style={{
                     width: '40%',
-                    padding: '40px',
-                    borderRight: '1px solid #333',
-                    background: 'rgba(0, 20, 40, 0.5)',
+                    padding: '30px',
+                    borderRight: '1px solid rgba(0, 240, 255, 0.2)',
+                    background: 'linear-gradient(180deg, rgba(0, 240, 255, 0.03) 0%, transparent 100%)',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '20px'
+                    gap: '15px'
                 }}>
-                    <h2 style={{ fontFamily: 'Orbitron', color: '#ffe600', marginBottom: '20px', letterSpacing: '2px' }}>
+                    <h2 style={{ fontFamily: 'Orbitron', color: '#00f0ff', marginBottom: '15px', letterSpacing: '3px', fontSize: '1.1rem', textShadow: '0 0 10px rgba(0, 240, 255, 0.5)' }}>
                         ACTIVE LOADOUT
                     </h2>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                         {slots.map(slot => {
                             const equippedItem = user.loadout[slot.id as keyof typeof user.loadout];
                             const Icon = slot.icon;
 
                             return (
                                 <div key={slot.id} style={{
-                                    background: 'rgba(0, 0, 0, 0.6)',
-                                    border: `1px solid ${equippedItem ? '#4ade80' : '#333'}`,
-                                    padding: '15px',
+                                    background: equippedItem ? 'rgba(0, 240, 255, 0.05)' : 'rgba(0, 0, 0, 0.4)',
+                                    border: `1px solid ${equippedItem ? '#00f0ff' : 'rgba(255, 255, 255, 0.1)'}`,
+                                    padding: '12px',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: '15px',
+                                    gap: '12px',
                                     position: 'relative',
                                     transition: 'all 0.3s ease'
                                 }}>
                                     <div style={{
-                                        width: '40px',
-                                        height: '40px',
-                                        background: 'rgba(74, 222, 128, 0.1)',
+                                        width: '35px',
+                                        height: '35px',
+                                        background: 'rgba(0, 240, 255, 0.1)',
                                         display: 'flex',
                                         justifyContent: 'center',
                                         alignItems: 'center',
-                                        color: '#4ade80'
+                                        color: '#00f0ff'
                                     }}>
-                                        <Icon size={20} />
+                                        <Icon size={18} />
                                     </div>
 
                                     <div style={{ flex: 1 }}>
-                                        <div style={{ fontSize: '0.7rem', color: '#666', fontFamily: 'Orbitron' }}>
+                                        <div style={{ fontSize: '0.6rem', color: '#5a5a6a', fontFamily: 'Orbitron', letterSpacing: '1px' }}>
                                             {slot.label}
                                         </div>
                                         <div style={{
-                                            color: equippedItem ? '#fff' : '#444',
-                                            fontFamily: 'Rajdhani',
-                                            fontSize: '1.1rem',
+                                            color: equippedItem ? '#fff' : '#3a3a4a',
+                                            fontFamily: 'Orbitron',
+                                            fontSize: '0.85rem',
                                             fontWeight: 'bold'
                                         }}>
                                             {equippedItem ? equippedItem.name : 'EMPTY SLOT'}
@@ -141,13 +143,14 @@ export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                                         <button
                                             onClick={() => unequipItem(slot.id as any)}
                                             style={{
-                                                background: 'rgba(255, 0, 85, 0.2)',
-                                                border: '1px solid #ff0055',
-                                                color: '#ff0055',
-                                                padding: '5px 10px',
+                                                background: 'rgba(255, 0, 60, 0.2)',
+                                                border: '1px solid #ff003c',
+                                                color: '#ff003c',
+                                                padding: '4px 8px',
                                                 cursor: 'pointer',
-                                                fontSize: '0.7rem',
-                                                fontFamily: 'Orbitron'
+                                                fontSize: '0.6rem',
+                                                fontFamily: 'Orbitron',
+                                                letterSpacing: '1px'
                                             }}
                                         >
                                             UNEQUIP
@@ -158,15 +161,15 @@ export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         })}
                     </div>
 
-                    <div style={{ marginTop: 'auto', padding: '20px', background: 'rgba(74, 222, 128, 0.05)', border: '1px solid #4ade80' }}>
-                        <div style={{ fontFamily: 'Orbitron', color: '#4ade80', fontSize: '0.9rem', marginBottom: '10px' }}>
+                    <div style={{ marginTop: 'auto', padding: '15px', background: 'rgba(0, 240, 255, 0.03)', border: '1px solid rgba(0, 240, 255, 0.2)' }}>
+                        <div style={{ fontFamily: 'Orbitron', color: '#ff003c', fontSize: '0.75rem', marginBottom: '10px', letterSpacing: '2px' }}>
                             COMBAT STATS
                         </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.8rem', color: '#aaa' }}>
-                            <div>ATTACK POWER: <span style={{ color: '#fff' }}>--</span></div>
-                            <div>DEFENSE: <span style={{ color: '#fff' }}>--</span></div>
-                            <div>STEALTH: <span style={{ color: '#fff' }}>--</span></div>
-                            <div>WEIGHT: <span style={{ color: '#fff' }}>--</span></div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.7rem', color: '#5a5a6a' }}>
+                            <div>ATTACK: <span style={{ color: '#00f0ff' }}>--</span></div>
+                            <div>DEFENSE: <span style={{ color: '#00f0ff' }}>--</span></div>
+                            <div>STEALTH: <span style={{ color: '#00f0ff' }}>--</span></div>
+                            <div>WEIGHT: <span style={{ color: '#00f0ff' }}>--</span></div>
                         </div>
                     </div>
                 </div>
@@ -174,27 +177,28 @@ export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                 {/* RIGHT PANEL: INVENTORY */}
                 <div className="inventory-panel" style={{
                     width: '60%',
-                    padding: '40px',
-                    overflowY: 'auto'
+                    padding: '30px',
+                    overflowY: 'auto',
+                    background: 'rgba(0, 0, 0, 0.2)'
                 }}>
-                    <h2 style={{ fontFamily: 'Orbitron', color: '#4ade80', marginBottom: '20px', letterSpacing: '2px' }}>
-                        STORAGE // {user.inventory.length} ITEMS
+                    <h2 style={{ fontFamily: 'Orbitron', color: '#00f0ff', marginBottom: '15px', letterSpacing: '3px', fontSize: '1rem' }}>
+                        STORAGE <span style={{ color: '#fcee0a' }}>// {user.inventory.length} ITEMS</span>
                     </h2>
 
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-                        gap: '15px'
+                        gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+                        gap: '12px'
                     }}>
                         {user.inventory.map((item, index) => (
                             <motion.div
                                 key={`${item.id}-${index}`}
-                                whileHover={{ scale: 1.05, borderColor: '#ffe600' }}
+                                whileHover={{ scale: 1.03, borderColor: '#00f0ff' }}
                                 onClick={() => handleEquip(item)}
                                 style={{
-                                    background: 'rgba(20, 20, 20, 0.8)',
-                                    border: '1px solid #333',
-                                    padding: '10px',
+                                    background: 'linear-gradient(135deg, rgba(20, 25, 35, 0.9) 0%, rgba(15, 18, 25, 0.8) 100%)',
+                                    border: '1px solid rgba(0, 240, 255, 0.2)',
+                                    padding: '8px',
                                     cursor: 'pointer',
                                     position: 'relative',
                                     aspectRatio: '1/1',
@@ -206,28 +210,28 @@ export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                             >
                                 <div style={{
                                     width: '100%',
-                                    height: '60%',
+                                    height: '55%',
                                     backgroundImage: `url(${item.image})`,
                                     backgroundSize: 'cover',
                                     backgroundPosition: 'center',
-                                    marginBottom: '10px',
-                                    opacity: 0.8
+                                    marginBottom: '8px',
+                                    opacity: 0.75
                                 }}></div>
 
                                 <div>
                                     <div style={{
-                                        fontSize: '0.8rem',
-                                        color: '#fff',
-                                        fontFamily: 'Rajdhani',
+                                        fontSize: '0.7rem',
+                                        color: '#00f0ff',
+                                        fontFamily: 'Orbitron',
                                         fontWeight: 'bold',
                                         whiteSpace: 'nowrap',
                                         overflow: 'hidden',
                                         textOverflow: 'ellipsis',
-                                        marginBottom: '5px'
+                                        marginBottom: '3px'
                                     }}>
                                         {item.name}
                                     </div>
-                                    <div style={{ fontSize: '0.7rem', color: '#666', marginBottom: '8px' }}>
+                                    <div style={{ fontSize: '0.6rem', color: '#5a5a6a', marginBottom: '6px', letterSpacing: '1px' }}>
                                         {item.type.toUpperCase()}
                                     </div>
                                     {item.modelPath && (
@@ -237,20 +241,21 @@ export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                                                 setViewing3D(item);
                                             }}
                                             style={{
-                                                background: 'rgba(74, 222, 128, 0.1)',
-                                                border: '1px solid #4ade80',
-                                                color: '#4ade80',
-                                                padding: '4px 8px',
-                                                fontSize: '0.65rem',
+                                                background: 'rgba(0, 240, 255, 0.1)',
+                                                border: '1px solid #00f0ff',
+                                                color: '#00f0ff',
+                                                padding: '3px 6px',
+                                                fontSize: '0.55rem',
                                                 fontFamily: 'Orbitron',
                                                 display: 'flex',
                                                 alignItems: 'center',
-                                                gap: '4px',
+                                                gap: '3px',
                                                 width: '100%',
-                                                justifyContent: 'center'
+                                                justifyContent: 'center',
+                                                letterSpacing: '1px'
                                             }}
                                         >
-                                            <BoxSelect size={12} />
+                                            <BoxSelect size={10} />
                                             VIEW 3D
                                         </button>
                                     )}
@@ -262,9 +267,11 @@ export const Inventory: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     {user.inventory.length === 0 && (
                         <div style={{
                             textAlign: 'center',
-                            color: '#444',
-                            marginTop: '100px',
-                            fontFamily: 'Orbitron'
+                            color: '#5a5a6a',
+                            marginTop: '80px',
+                            fontFamily: 'Orbitron',
+                            fontSize: '0.85rem',
+                            letterSpacing: '2px'
                         }}>
                             NO ITEMS IN STORAGE
                         </div>

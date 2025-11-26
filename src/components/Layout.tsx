@@ -40,8 +40,8 @@ export const Layout: React.FC = () => {
                     <span className="version">v1.0.0</span>
                 </div>
 
-                <div className="search-bar" style={{ flex: 1, margin: '0 20px', position: 'relative', maxWidth: '500px' }}>
-                    <Search style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#4ade80' }} size={18} />
+                <div className="search-bar" style={{ flex: 1, margin: '0 15px', position: 'relative', maxWidth: '400px' }}>
+                    <Search style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: '#00f0ff' }} size={16} />
                     <input
                         type="text"
                         placeholder="SEARCH..."
@@ -49,12 +49,13 @@ export const Layout: React.FC = () => {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         style={{
                             width: '100%',
-                            background: 'rgba(74, 222, 128, 0.1)',
-                            border: '1px solid #4ade80',
-                            padding: '10px 10px 10px 40px',
-                            color: '#fff',
+                            background: 'rgba(0, 240, 255, 0.05)',
+                            border: '1px solid rgba(0, 240, 255, 0.3)',
+                            padding: '8px 10px 8px 35px',
+                            color: '#00f0ff',
                             fontFamily: 'Orbitron',
-                            fontSize: '0.9rem'
+                            fontSize: '0.75rem',
+                            letterSpacing: '1px'
                         }}
                     />
                 </div>
@@ -100,77 +101,80 @@ export const Layout: React.FC = () => {
                         <button
                             onClick={() => setShowAdmin(true)}
                             style={{
-                                background: 'transparent',
-                                border: '1px solid #ffe600',
-                                color: '#ffe600',
-                                padding: '8px 15px',
+                                background: 'rgba(252, 238, 10, 0.1)',
+                                border: '1px solid #fcee0a',
+                                color: '#fcee0a',
+                                padding: '6px 12px',
                                 fontFamily: 'Orbitron',
+                                fontSize: '0.7rem',
                                 cursor: 'pointer',
-                                marginRight: '10px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px'
+                                gap: '6px',
+                                letterSpacing: '1px'
                             }}
                         >
-                            <Shield size={16} />
+                            <Shield size={14} />
                             ADMIN
                         </button>
                     )}
                     <button
                         onClick={() => setShowInventory(true)}
                         style={{
-                            background: 'transparent',
-                            border: '1px solid #4ade80',
-                            color: '#4ade80',
-                            padding: '8px 15px',
+                            background: 'rgba(0, 240, 255, 0.1)',
+                            border: '1px solid #00f0ff',
+                            color: '#00f0ff',
+                            padding: '6px 12px',
                             fontFamily: 'Orbitron',
+                            fontSize: '0.7rem',
                             cursor: 'pointer',
-                            marginRight: '10px',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px'
+                            gap: '6px',
+                            letterSpacing: '1px'
                         }}
                     >
-                        <Package size={16} />
+                        <Package size={14} />
                         INVENTORY
                     </button>
                     <button
                         onClick={() => setShowHistory(true)}
                         style={{
-                            background: 'transparent',
-                            border: '1px solid #ffe600',
-                            color: '#ffe600',
-                            padding: '8px 15px',
+                            background: 'rgba(252, 238, 10, 0.1)',
+                            border: '1px solid #fcee0a',
+                            color: '#fcee0a',
+                            padding: '6px 12px',
                             fontFamily: 'Orbitron',
+                            fontSize: '0.7rem',
                             cursor: 'pointer',
-                            marginRight: '20px',
                             display: 'flex',
                             alignItems: 'center',
-                            gap: '8px'
+                            gap: '6px',
+                            letterSpacing: '1px'
                         }}
                     >
-                        <Receipt size={16} />
+                        <Receipt size={14} />
                         HISTORY
                     </button>
                     <button
                         onClick={() => setShowProfile(true)}
                         className="stat-item"
                         style={{
-                            marginRight: '20px',
                             cursor: 'pointer',
                             background: 'transparent',
                             border: 'none',
-                            padding: 0,
+                            padding: '5px 10px',
                             display: 'flex',
                             flexDirection: 'column',
-                            alignItems: 'flex-start'
+                            alignItems: 'flex-start',
+                            borderLeft: '2px solid #00f0ff'
                         }}
                     >
-                        <span className="label" style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            <User size={12} />
+                        <span className="label" style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '0.6rem' }}>
+                            <User size={10} />
                             OPERATOR
                         </span>
-                        <span className="value" style={{ color: '#4ade80' }}>{user?.username.toUpperCase()}</span>
+                        <span className="value" style={{ color: '#00f0ff', fontSize: '1rem' }}>{user?.username.toUpperCase()}</span>
                     </button>
                     <div className="stat-item">
                         <span className="label">CREDITS</span>
@@ -179,13 +183,14 @@ export const Layout: React.FC = () => {
                     <button
                         onClick={logout}
                         style={{
-                            background: 'transparent',
-                            border: '1px solid #ff0055',
-                            color: '#ff0055',
-                            padding: '5px 15px',
+                            background: 'rgba(255, 0, 60, 0.1)',
+                            border: '1px solid #ff003c',
+                            color: '#ff003c',
+                            padding: '6px 12px',
                             fontFamily: 'Orbitron',
+                            fontSize: '0.7rem',
                             cursor: 'pointer',
-                            marginLeft: '20px'
+                            letterSpacing: '1px'
                         }}
                     >
                         DISCONNECT
@@ -208,7 +213,7 @@ export const Layout: React.FC = () => {
                     </ul>
 
                     <div style={{ marginTop: '20px' }}>
-                        <div style={{ color: '#666', marginBottom: '10px', fontSize: '0.8rem' }}>SORT BY</div>
+                        <div style={{ color: '#5a5a6a', marginBottom: '10px', fontSize: '0.65rem', letterSpacing: '2px' }}>SORT BY</div>
                         <CustomSelect
                             options={[
                                 { value: '', label: 'DEFAULT' },
